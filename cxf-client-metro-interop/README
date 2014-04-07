@@ -1,0 +1,11 @@
+For CXF debug logs, change src/test/resources/logging.properties:
+...
+java.util.logging.ConsoleHandler.level = FINEST
+...
+...
+# CXF
+org.apache.cxf.level=FINEST
+
+# Metro
+com.sun.xml.ws.level = FINEST
+com.sun.xml.wss.level = FINEST

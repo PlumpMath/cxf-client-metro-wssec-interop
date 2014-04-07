@@ -1,0 +1,56 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cxf="http://cxf.apache.org/core" xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:http="http://cxf.apache.org/transports/http/configuration" xmlns:sec="http://cxf.apache.org/configuration/security"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+        http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
+        http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd">
+
+	<cxf:bus>
+		<cxf:features>
+			<cxf:logging />
+		</cxf:features>
+	</cxf:bus>
+
+	<jaxws:client name="{http://xmlsoap.org/Ping}PingPort" createdFromAPI="true"
+		wsdlLocation="https://localhost:8443/jaxws-sc/simple?wsdl" address="https://localhost:8443/jaxws-sc/simple">
+		<jaxws:inInterceptors>
+			<bean class="org.apache.cxf.interceptor.LoggingInInterceptor" />
+		</jaxws:inInterceptors>
+		<jaxws:outInterceptors>
+			<bean class="org.apache.cxf.interceptor.LoggingOutInterceptor" />
+		</jaxws:outInterceptors>
+		<jaxws:properties>
+			<!-- Bugfix: this entry is necessary for cxf <= 2.7.8 (useless for later versions) to use the right keysize as CXF is ignoring Basic128 assertion in service WSDL bootstrap policy for WS-SecureConversation and using 
+				256-bit keysize instead. For cxf <= 2.7.8, secure conversation with Metro does not work even with this property. (See discussion on CXF mailing list.) -->
+<!-- 			<entry key="ws-security.sts.client"> -->
+<!-- 				<bean class="org.apache.cxf.ws.security.trust.STSClient"> -->
+<!-- 					<constructor-arg ref="cxf" /> -->
+<!-- 					<property name="keySize" value="256" /> -->
+<!-- 				</bean> -->
+<!-- 			</entry> -->
+			<entry key="ws-security.username.sct" value="alice" />
+			<entry key="ws-security.password.sct" value="alice" />
+			<!-- Below line needed only when accessing a Metro STS *and* w/UT auth due to lack of TokenType param 
+				(Metro bugs WSIT-1324 and WSIT-1570) -->
+			<entry key="ws-security.is-bsp-compliant" value="false" />
+		</jaxws:properties>
+	</jaxws:client>
+
+	<http:conduit name="https://localhost.*">
+		<!-- disableCNcheck must be false in production! -->
+		<http:tlsClientParameters disableCNCheck="true">
+			<sec:keyManagers keyPassword="changeit">
+				<sec:keyStore type="jks" password="changeit" resource="client-keystore.jks" />
+			</sec:keyManagers>
+			<sec:trustManagers>
+				<sec:keyStore type="jks" password="changeit" resource="client-truststore.jks" />
+			</sec:trustManagers>
+		</http:tlsClientParameters>
+	</http:conduit>
+</beans>
+
+

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- #%L PEP Proxy Webapp Stub %% Copyright (C) 2011 - 2013 Thales %% All rights reserved. #L% -->
+
+<!-- For assistance related to logback-translator or configuration -->
+<!-- files in general, please contact the logback user mailing list -->
+<!-- at http://www.qos.ch/mailman/listinfo/logback-user -->
+<!-- -->
+<!-- For professional support please see -->
+<!-- http://www.qos.ch/shop/products/professionalSupport -->
+<!-- -->
+<!-- 'application-name' is set at runtime by ProxyServletContextListener. -->
+<!-- More information: http://logback.qos.ch/faq.html#sharedConfiguration -->
+<configuration>
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%date{ISO8601} %-5level [%thread] %logger{0}:%line: %msg%n</pattern>
+		</encoder>
+	</appender>
+<!-- For Jetty logging -->
+	<root level="INFO">
+		<appender-ref ref="stdout" />
+	</root>
+</configuration>
