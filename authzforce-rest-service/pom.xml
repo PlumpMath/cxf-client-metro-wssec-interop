@@ -7,7 +7,7 @@
 		<version>3.0.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>authzforce-rest-service</artifactId>
-	<version>4.1-SNAPSHOT</version>
+	<version>FIWARE4.1-SNAPSHOT</version>
 	<name>AuthZForce REST service</name>
 	<description>Implementation of RESTful API defined by authzforce-rest-api-model package</description>
 	<organization>
@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>com.thalesgroup.authzforce.core</groupId>
 			<artifactId>authzforce-core</artifactId>
-			<version>3.5.4-SNAPSHOT</version>
+			<version>FIWARE4.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<build>

@@ -401,10 +401,9 @@ public class SecurityDomain
 			// TODO: optimization: load policy directly from PolicySet arg (requires changing
 			// Sunxacml StaticPolicyFinderModule code)
 			updatePDP(true, null);
-		} catch (Exception e)
+		} finally
 		{
 			FileUtils.copyFile(this.policySetBackupFile, this.policySetFile);
-			throw new IllegalArgumentException("PolicySet rejected by PDP because of unsupported or illegal parameters", e.getCause());
 		}
 	}
 
