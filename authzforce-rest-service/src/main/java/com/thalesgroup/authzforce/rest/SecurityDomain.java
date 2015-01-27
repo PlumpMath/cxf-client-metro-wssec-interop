@@ -395,13 +395,16 @@ public class SecurityDomain
 			throw new JAXBException("Error marshalling new domain policy to file: " + this.policySetFile.getAbsolutePath(), e);
 		}
 
-		// try updating PDP with new policy
+		/*
+		 * Try updating PDP with new policy
+		 * If any error occurs, reject the operation and restore previous state.
+		 */
 		try
 		{
 			// TODO: optimization: load policy directly from PolicySet arg (requires changing
 			// Sunxacml StaticPolicyFinderModule code)
 			updatePDP(true, null);
-		} catch (Exception e)
+		} catch (Throwable e)
 		{
 			FileUtils.copyFile(this.policySetBackupFile, this.policySetFile);
 			throw new IllegalArgumentException("PolicySet rejected by PDP because of unsupported or illegal parameters", e.getCause());
@@ -467,11 +470,13 @@ public class SecurityDomain
 			throw new JAXBException("Error marshalling new domain PDP attribute finders to file: " + this.attrFindersFile.getAbsolutePath(), e);
 		}
 
-		// try updating PDP with new attribute finders
+		/* Try updating PDP with new attribute finders
+		 * If any error occurs, reject the operation and restore previous state
+		 */
 		try
 		{
 			updatePDP(false, attributefinders);
-		} catch (Exception e)
+		} catch (Throwable e)
 		{
 			FileUtils.copyFile(this.attrFindersBackupFile, this.attrFindersFile);
 			throw new IllegalArgumentException("Attribute finders configuration rejected by PDP because of unsupported or illegal parameters", e);
@@ -528,11 +533,14 @@ public class SecurityDomain
 			throw new JAXBException("Error marshalling new domain ref-PolicySets to file: " + this.refPolicySetFile.getAbsolutePath(), e);
 		}
 
-		// try updating PDP with new ref-PolicySets
+		/*
+		 * Try updating PDP with new ref-PolicySets
+		 * If any error occurs, reject the operation and restore previous state.
+		 */
 		try
 		{
 			updatePDP(true, null);
-		} catch (Exception e)
+		} catch (Throwable e)
 		{
 			FileUtils.copyFile(this.refPolicySetBackupFile, this.refPolicySetFile);
 			throw new IllegalArgumentException("Ref-PolicySets rejected by PDP because of unsupported or illegal parameters", e);
