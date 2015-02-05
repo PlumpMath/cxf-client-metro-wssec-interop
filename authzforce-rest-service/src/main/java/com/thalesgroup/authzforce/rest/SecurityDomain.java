@@ -407,7 +407,11 @@ public class SecurityDomain
 		} catch (Throwable e)
 		{
 			FileUtils.copyFile(this.policySetBackupFile, this.policySetFile);
-			throw new IllegalArgumentException("PolicySet rejected by PDP because of unsupported or illegal parameters", e.getCause());
+			if (e instanceof IllegalArgumentException) {
+				throw e;
+			}
+			
+			throw new IllegalArgumentException("PolicySet rejected by PDP because of unsupported or illegal parameters or internal error", e);
 		}
 	}
 
