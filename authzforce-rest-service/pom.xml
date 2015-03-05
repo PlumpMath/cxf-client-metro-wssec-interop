@@ -2,12 +2,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<artifactId>authzforce-parent</artifactId>
 		<groupId>com.thalesgroup.authzforce</groupId>
+		<artifactId>authzforce-parent</artifactId>
 		<version>3.0.6-SNAPSHOT</version>
 	</parent>
 	<artifactId>authzforce-rest-service</artifactId>
-	<version>4.3-SNAPSHOT</version>
+	<version>4.1.1-SNAPSHOT</version>
 	<name>AuthZForce REST service</name>
 	<description>Implementation of RESTful API defined by authzforce-rest-api-model package</description>
 	<organization>
@@ -72,6 +72,18 @@
 						<phase>process-sources</phase>
 						<goals>
 							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
 						</goals>
 					</execution>
 				</executions>
