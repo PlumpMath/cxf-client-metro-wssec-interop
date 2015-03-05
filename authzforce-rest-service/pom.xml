@@ -2,12 +2,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<artifactId>authzforce-parent</artifactId>
 		<groupId>com.thalesgroup.authzforce</groupId>
-		<version>3.0.2</version>
+		<artifactId>authzforce-parent</artifactId>
+		<version>3.0.6-SNAPSHOT</version>
 	</parent>
 	<artifactId>authzforce-rest-service</artifactId>
-	<version>FIWARE4.1</version>
+	<version>4.1.1-SNAPSHOT</version>
 	<name>AuthZForce REST service</name>
 	<description>Implementation of RESTful API defined by authzforce-rest-api-model package</description>
 	<organization>
@@ -35,9 +35,8 @@
 			<artifactId>authzforce-rest-api-model</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.thalesgroup.authzforce.core</groupId>
+			<groupId>com.thalesgroup.authzforce</groupId>
 			<artifactId>authzforce-core</artifactId>
-			<version>FIWARE4.1</version>
 		</dependency>
 	</dependencies>
 	<build>
