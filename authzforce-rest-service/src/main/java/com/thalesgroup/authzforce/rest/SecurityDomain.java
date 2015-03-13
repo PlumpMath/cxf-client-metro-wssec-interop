@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
@@ -258,12 +257,13 @@ public class SecurityDomain
 			// StaticDomRefPolicyFinderModule
 			final PolicyFinderModule<?> refPolicyFinderMod;
 			final PolicySets policySets = this.getRefPolicySets();
-			refPolicyFinderMod = new StaticRefPolicyFinderModule(policySets.getPolicySets());
+			final List<PolicySet> policySetList = policySets.getPolicySets();
+			refPolicyFinderMod = new StaticRefPolicyFinderModule(policySetList.toArray(new String[policySetList.size()]));
 			policyFinderModules.add(refPolicyFinderMod);
 
 			// StaticPolicyFinderModule
-			final PolicyFinderModule<?> rootPolicyFinderMod = new StaticPolicyFinderModule(Collections.singletonList(this.policySetFile
-					.getAbsolutePath()));
+			final PolicyFinderModule<?> rootPolicyFinderMod = new StaticPolicyFinderModule( new String[] {this.policySetFile
+					.getAbsolutePath()});
 			policyFinderModules.add(rootPolicyFinderMod);
 
 			final PolicyFinder policyFinder = this.pdp.getPolicyFinder();

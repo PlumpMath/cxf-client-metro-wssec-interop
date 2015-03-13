@@ -4,10 +4,10 @@
 	<parent>
 		<groupId>com.thalesgroup.authzforce</groupId>
 		<artifactId>authzforce-parent</artifactId>
-		<version>3.0.6-SNAPSHOT</version>
+		<version>3.0.6</version>
 	</parent>
 	<artifactId>authzforce-rest-service</artifactId>
-	<version>4.1.1-SNAPSHOT</version>
+	<version>4.1.2-SNAPSHOT</version>
 	<name>AuthZForce REST service</name>
 	<description>Implementation of RESTful API defined by authzforce-rest-api-model package</description>
 	<organization>
