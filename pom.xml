@@ -7,7 +7,7 @@
 		<version>3.0.6</version>
 	</parent>
 	<artifactId>authzforce-rest-service</artifactId>
-	<version>4.1.2-SNAPSHOT</version>
+	<version>4.1.2</version>
 	<name>AuthZForce REST service</name>
 	<description>Implementation of RESTful API defined by authzforce-rest-api-model package</description>
 	<organization>
