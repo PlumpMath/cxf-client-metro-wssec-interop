@@ -38,6 +38,10 @@
 			<groupId>com.thalesgroup.authzforce</groupId>
 			<artifactId>authzforce-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.thalesgroup.appsec</groupId>
+			<artifactId>thales-appsec-common-utils</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
