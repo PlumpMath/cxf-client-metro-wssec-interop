@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Context;
@@ -37,6 +36,7 @@ import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.w3._2005.atom.Link;
 import org.w3._2005.atom.Relation;
 
+import com.sun.istack.NotNull;
 import com.thalesgroup.authz.model._3_0.resource.Properties;
 import com.thalesgroup.authz.model._3_0.resource.Resources;
 import com.thalesgroup.authzforce.api.jaxrs.EndUserDomain;

@@ -27,7 +27,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.InternalServerErrorException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -37,26 +36,24 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 
-import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySet;
-
 import org.apache.commons.io.FileUtils;
 
 import com.sun.xacml.PDP;
-import com.sun.xacml.PDPConfig;
 import com.sun.xacml.finder.AttributeFinder;
 import com.sun.xacml.finder.AttributeFinderModule;
-import com.sun.xacml.finder.PolicyFinder;
-import com.sun.xacml.finder.PolicyFinderModule;
-import com.sun.xacml.support.finder.StaticPolicyFinderModule;
-import com.sun.xacml.support.finder.StaticRefPolicyFinderModule;
-import com.thalesgroup.appsec.util.Utils;
 import com.thalesgroup.authz.model._3.AttributeFinders;
 import com.thalesgroup.authz.model._3.PolicySets;
 import com.thalesgroup.authz.model._3_0.resource.Properties;
 import com.thalesgroup.authz.model.ext._3.AbstractAttributeFinder;
-import com.thalesgroup.authzforce.core.PdpConfigurationManager;
-import com.thalesgroup.authzforce.core.PdpExtensionFactory;
+import com.thalesgroup.authz.model.ext._3.AbstractPolicyFinder;
+import com.thalesgroup.appsec.util.Utils;
+import com.thalesgroup.authzforce.core.PdpConfigurationParser;
 import com.thalesgroup.authzforce.core.PdpModelHandler;
+import com.thalesgroup.authzforce.core.XACMLBindingUtils;
+import com.thalesgroup.authzforce.pdp.model._2015._06.BaseStaticPolicyFinder;
+import com.thalesgroup.authzforce.pdp.model._2015._06.Pdp;
+
+import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySet;
 
 public class SecurityDomain
 {
@@ -145,9 +142,9 @@ public class SecurityDomain
 
 	private final PDP pdp;
 
-	private final List<PolicyFinderModule<?>> defaultPolicyFinderModules;
+	private final List<AbstractPolicyFinder> defaultPolicyFinderModules;
 
-	private final List<AttributeFinderModule<?>> defaultAttributeFinderModules;
+	private final List<AbstractAttributeFinder> defaultAttributeFinderModules;
 
 	private final File refPolicySetFile;
 
@@ -223,16 +220,12 @@ public class SecurityDomain
 			throw new RuntimeException("Error parsing PDP configuration from location: '" + pdpConfLocation + "'", e);
 		}
 		
-		final PDPConfig conf = pdpConfMgr.getDefaultPDPConfig();
-		this.pdp = new PDP(conf);
-		// store default PolicyFinderModules as basis for adding new ones added via updatePDP()
-		this.defaultPolicyFinderModules = this.pdp.getPolicyFinder().getModules();
-		// store default AttributeFinderModules as basis for adding the ones added via
-		// updatePDP()
-		this.defaultAttributeFinderModules = this.pdp.getAttributeFinder().getModules();
-		// Extra attribute finders
-		final AttributeFinders attrFinders = getAttributeFinders();
-		updatePDP(true, attrFinders);
+		BaseStaticPolicyFinder jaxbRootPolicyFinder = new BaseStaticPolicyFinder();
+		jaxbRootPolicyFinder.setPolicyLocation(this.policySetFile.getPath());
+		
+		Pdp jaxbPDP = new Pdp();
+		jaxbPDP.setRootPolicyFinder(jaxbRootPolicyFinder);
+		this.pdp = PdpConfigurationParser.getPDP(jaxbPDP);;
 	}
 
 	/**
@@ -356,7 +349,7 @@ public class SecurityDomain
 		final Unmarshaller unmarshaller;
 		try
 		{
-			unmarshaller = PdpModelHandler.XACML_3_0_JAXB_CONTEXT.createUnmarshaller();
+			unmarshaller = XACMLBindingUtils.createXacml3Unmarshaller();
 			unmarshaller.setSchema(this.authzApiSchema);
 			final JAXBElement<PolicySet> jaxbElt = unmarshaller.unmarshal(new StreamSource(policySetFile), PolicySet.class);
 			return jaxbElt.getValue();
@@ -384,7 +377,7 @@ public class SecurityDomain
 		final Marshaller marshaller;
 		try
 		{
-			marshaller = PdpModelHandler.XACML_3_0_JAXB_CONTEXT.createMarshaller();
+			marshaller = XACMLBindingUtils.createXacml3Marshaller();
 			marshaller.setSchema(authzApiSchema);
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, UTF8_JAXB_ENCODING);
 			marshaller.marshal(policySet, policySetFile);
@@ -498,7 +491,7 @@ public class SecurityDomain
 		final Unmarshaller unmarshaller;
 		try
 		{
-			unmarshaller = jaxbCtx.createUnmarshaller();
+			unmarshaller = XACMLBindingUtils.createXacml3Unmarshaller();
 			unmarshaller.setSchema(authzApiSchema);
 			final JAXBElement<PolicySets> jaxbElt = unmarshaller.unmarshal(new StreamSource(this.refPolicySetFile), PolicySets.class);
 			return jaxbElt.getValue();
@@ -526,7 +519,7 @@ public class SecurityDomain
 		final Marshaller marshaller;
 		try
 		{
-			marshaller = jaxbCtx.createMarshaller();
+			marshaller = XACMLBindingUtils.createXacml3Marshaller();
 			marshaller.setSchema(authzApiSchema);
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, UTF8_JAXB_ENCODING);
 			marshaller.marshal(policysets, this.refPolicySetFile);

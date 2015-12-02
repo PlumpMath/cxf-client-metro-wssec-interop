@@ -55,7 +55,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.validation.Schema;
@@ -65,6 +64,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
+import com.sun.istack.NotNull;
 import com.thalesgroup.appsec.util.Utils;
 import com.thalesgroup.authz.model._3.AttributeFinders;
 import com.thalesgroup.authz.model._3.PolicySets;
@@ -314,8 +314,9 @@ public class SecurityDomainManager
 		this.schema = schema;
 		this.pdpModelHandler = pdpModelHandler;
 		
+		
 		final List<Class<?>> jaxbClassesToBeBound = new ArrayList<>(Arrays.asList(DEFAULT_JAXB_CTX_BOUND_CLASSES));
-		jaxbClassesToBeBound.addAll(Arrays.asList(pdpModelHandler.getExtensionJaxbBoundClasses()));
+		jaxbClassesToBeBound.addAll(PdpExtensionLoader.getExtensionJaxbClasses());
 		try
 		{
 			jaxbCtx = JAXBContext.newInstance(jaxbClassesToBeBound.toArray(new Class<?>[jaxbClassesToBeBound.size()]));

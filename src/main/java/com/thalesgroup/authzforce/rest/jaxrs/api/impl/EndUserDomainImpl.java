@@ -21,7 +21,7 @@
  */
 package com.thalesgroup.authzforce.rest.jaxrs.api.impl;
 
-import javax.validation.constraints.NotNull;
+import com.sun.istack.NotNull;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;

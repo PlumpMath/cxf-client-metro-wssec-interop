@@ -18,13 +18,12 @@
  */
 package com.thalesgroup.authzforce.rest.jaxrs.api.impl;
 
-import javax.validation.constraints.NotNull;
+import com.sun.istack.NotNull;
 
 import oasis.names.tc.xacml._3_0.core.schema.wd_17.Request;
 import oasis.names.tc.xacml._3_0.core.schema.wd_17.Response;
 
 import com.sun.xacml.PDP;
-import com.sun.xacml.ctx.ResponseCtx;
 import com.thalesgroup.authzforce.api.jaxrs.Pdp;
 
 /**
@@ -44,13 +43,12 @@ public class PdpImpl implements Pdp
 	}
 
 	@Override
-	public Response requestPolicyDecision(Request request)
-	{		
-		final ResponseCtx respCtx = pdp.evaluate(request);
-		// convert sunxacmlResp to JAXB Response type
-		final Response jaxbResponse = new Response();
-		jaxbResponse.getResults().addAll(respCtx.getResults());
-		return jaxbResponse;
+	public Response requestPolicyDecision(Request request) {
+//		final ResponseCtx respCtx = pdp.evaluate(request);
+//		// convert sunxacmlResp to JAXB Response type
+//		final Response jaxbResponse = new Response();
+//		jaxbResponse.getResults().addAll(respCtx.getResults());
+		return  pdp.evaluate(request);
 	}
 
 }

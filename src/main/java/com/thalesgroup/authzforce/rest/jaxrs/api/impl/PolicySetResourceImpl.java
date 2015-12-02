@@ -23,7 +23,7 @@ package com.thalesgroup.authzforce.rest.jaxrs.api.impl;
 
 import java.io.IOException;
 
-import javax.validation.constraints.NotNull;
+import com.sun.istack.NotNull;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.xml.bind.JAXBException;
