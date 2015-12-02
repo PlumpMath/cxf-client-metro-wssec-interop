@@ -27,6 +27,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.InternalServerErrorException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -41,12 +42,12 @@ import org.apache.commons.io.FileUtils;
 import com.sun.xacml.PDP;
 import com.sun.xacml.finder.AttributeFinder;
 import com.sun.xacml.finder.AttributeFinderModule;
+import com.thalesgroup.appsec.util.Utils;
 import com.thalesgroup.authz.model._3.AttributeFinders;
 import com.thalesgroup.authz.model._3.PolicySets;
 import com.thalesgroup.authz.model._3_0.resource.Properties;
 import com.thalesgroup.authz.model.ext._3.AbstractAttributeFinder;
 import com.thalesgroup.authz.model.ext._3.AbstractPolicyFinder;
-import com.thalesgroup.appsec.util.Utils;
 import com.thalesgroup.authzforce.core.PdpConfigurationParser;
 import com.thalesgroup.authzforce.core.PdpModelHandler;
 import com.thalesgroup.authzforce.core.XACMLBindingUtils;
@@ -208,24 +209,13 @@ public class SecurityDomain
 
 		// Initialize PDP
 		final URI pdpConfLocation = pdpConfFile.toURI();
-		final PdpConfigurationManager pdpConfMgr;
-		try
-		{
-			pdpConfMgr = new PdpConfigurationManager(pdpConfLocation.toString(), pdpModelHandler);
-		} catch (IOException e)
-		{
-			throw new RuntimeException("Error parsing PDP configuration from location: '" + pdpConfLocation + "'", e);
-		} catch (JAXBException e)
-		{
-			throw new RuntimeException("Error parsing PDP configuration from location: '" + pdpConfLocation + "'", e);
-		}
 		
 		BaseStaticPolicyFinder jaxbRootPolicyFinder = new BaseStaticPolicyFinder();
 		jaxbRootPolicyFinder.setPolicyLocation(this.policySetFile.getPath());
 		
 		Pdp jaxbPDP = new Pdp();
 		jaxbPDP.setRootPolicyFinder(jaxbRootPolicyFinder);
-		this.pdp = PdpConfigurationParser.getPDP(jaxbPDP);;
+		this.pdp = PdpConfigurationParser.getPDP(jaxbPDP);
 	}
 
 	/**
@@ -245,21 +235,21 @@ public class SecurityDomain
 	{
 		if (reloadPolicyFinderModules)
 		{
-			final List<PolicyFinderModule<?>> policyFinderModules = new ArrayList<>(this.defaultPolicyFinderModules);
+			final List<AbstractPolicyFinder> policyFinderModules = new ArrayList<>(this.defaultPolicyFinderModules);
 
 			// StaticDomRefPolicyFinderModule
-			final PolicyFinderModule<?> refPolicyFinderMod;
+			final AbstractPolicyFinder refPolicyFinderMod;
 			final PolicySets policySets = this.getRefPolicySets();
 			final List<PolicySet> policySetList = policySets.getPolicySets();
 			refPolicyFinderMod = new StaticRefPolicyFinderModule(policySetList.toArray(new String[policySetList.size()]));
 			policyFinderModules.add(refPolicyFinderMod);
 
 			// StaticPolicyFinderModule
-			final PolicyFinderModule<?> rootPolicyFinderMod = new StaticPolicyFinderModule( new String[] {this.policySetFile
+			final AbstractPolicyFinder rootPolicyFinderMod = new StaticPolicyFinderModule( new String[] {this.policySetFile
 					.getAbsolutePath()});
 			policyFinderModules.add(rootPolicyFinderMod);
 
-			final PolicyFinder policyFinder = this.pdp.getPolicyFinder();
+			final AbstractPolicyFinder policyFinder = this.pdp.getPolicyFinder();
 			policyFinder.setModules(policyFinderModules);
 			/**
 			 * Finder Modules' init methods must be called after PolicyFinder#setModules() and in
@@ -276,10 +266,10 @@ public class SecurityDomain
 
 		if (attrfinders != null)
 		{
-			final List<AttributeFinderModule<?>> attrFinderModules = new ArrayList<>(this.defaultAttributeFinderModules);
+			final List<AbstractPolicyFinder> attrFinderModules = new ArrayList<>(this.defaultAttributeFinderModules);
 			for (AbstractAttributeFinder attrFinderConf : attrfinders.getAttributeFinders())
 			{
-				final AttributeFinderModule<?> newAttrFinderModule = PdpExtensionFactory.getInstance(attrFinderConf);
+				final AbstractPolicyFinder newAttrFinderModule = PdpExtensionFactory.getInstance(attrFinderConf);
 				attrFinderModules.add(newAttrFinderModule);
 			}
 

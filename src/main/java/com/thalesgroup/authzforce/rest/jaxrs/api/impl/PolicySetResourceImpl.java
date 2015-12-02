@@ -23,15 +23,15 @@ package com.thalesgroup.authzforce.rest.jaxrs.api.impl;
 
 import java.io.IOException;
 
-import com.sun.istack.NotNull;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.xml.bind.JAXBException;
 
-import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySet;
-
 import com.thalesgroup.authzforce.api.jaxrs.PolicySetResource;
 import com.thalesgroup.authzforce.rest.SecurityDomain;
+
+import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySet;
 
 public class PolicySetResourceImpl implements PolicySetResource
 {

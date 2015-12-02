@@ -18,13 +18,13 @@
  */
 package com.thalesgroup.authzforce.rest.jaxrs.api.impl;
 
-import com.sun.istack.NotNull;
-
-import oasis.names.tc.xacml._3_0.core.schema.wd_17.Request;
-import oasis.names.tc.xacml._3_0.core.schema.wd_17.Response;
+import javax.validation.constraints.NotNull;
 
 import com.sun.xacml.PDP;
 import com.thalesgroup.authzforce.api.jaxrs.Pdp;
+
+import oasis.names.tc.xacml._3_0.core.schema.wd_17.Request;
+import oasis.names.tc.xacml._3_0.core.schema.wd_17.Response;
 
 /**
  * EndUserDomainPDP implementation

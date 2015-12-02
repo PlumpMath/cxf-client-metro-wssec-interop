@@ -55,6 +55,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.validation.Schema;
@@ -64,11 +65,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
-import com.sun.istack.NotNull;
 import com.thalesgroup.appsec.util.Utils;
 import com.thalesgroup.authz.model._3.AttributeFinders;
 import com.thalesgroup.authz.model._3.PolicySets;
 import com.thalesgroup.authz.model._3_0.resource.Properties;
+import com.thalesgroup.authzforce.core.PdpExtensionLoader;
 import com.thalesgroup.authzforce.core.PdpModelHandler;
 
 
