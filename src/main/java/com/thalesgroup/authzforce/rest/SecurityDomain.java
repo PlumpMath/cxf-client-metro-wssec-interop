@@ -54,6 +54,7 @@ import com.thalesgroup.authzforce.core.XACMLBindingUtils;
 import com.thalesgroup.authzforce.pdp.model._2015._06.BaseStaticPolicyFinder;
 import com.thalesgroup.authzforce.pdp.model._2015._06.Pdp;
 
+import net.sf.saxon.lib.Logger;
 import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySet;
 
 public class SecurityDomain
@@ -143,9 +144,9 @@ public class SecurityDomain
 
 	private final PDP pdp;
 
-	private final List<AbstractPolicyFinder> defaultPolicyFinderModules;
-
-	private final List<AbstractAttributeFinder> defaultAttributeFinderModules;
+//	private final List<AbstractPolicyFinder> defaultPolicyFinderModules;
+//
+//	private final List<AbstractAttributeFinder> defaultAttributeFinderModules;
 
 	private final File refPolicySetFile;
 
@@ -208,14 +209,18 @@ public class SecurityDomain
 		Utils.checkFile("Domain PDP configuration file", pdpConfFile, false, true);
 
 		// Initialize PDP
-		final URI pdpConfLocation = pdpConfFile.toURI();
+		final String pdpConfLocation = pdpConfFile.getAbsolutePath();
 		
-		BaseStaticPolicyFinder jaxbRootPolicyFinder = new BaseStaticPolicyFinder();
-		jaxbRootPolicyFinder.setPolicyLocation(this.policySetFile.getPath());
-		
-		Pdp jaxbPDP = new Pdp();
-		jaxbPDP.setRootPolicyFinder(jaxbRootPolicyFinder);
-		this.pdp = PdpConfigurationParser.getPDP(jaxbPDP);
+//		BaseStaticPolicyFinder jaxbRootPolicyFinder = new BaseStaticPolicyFinder();
+//		jaxbRootPolicyFinder.setPolicyLocation(this.policySetFile.getPath());
+//		
+//		final Pdp jaxbPDP = new Pdp();
+//		jaxbPDP.setRootPolicyFinder(jaxbRootPolicyFinder);
+		try {
+			this.pdp = PdpConfigurationParser.getPDP(pdpConfLocation);
+		} catch (IOException | JAXBException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
