@@ -142,7 +142,7 @@ public class SecurityDomain
 
 	private final File pdpConfFile;
 
-	private final PDP pdp;
+	private PDP pdp;
 
 //	private final List<AbstractPolicyFinder> defaultPolicyFinderModules;
 //
@@ -164,9 +164,12 @@ public class SecurityDomain
 	 * @param props
 	 *            new domain properties for new domain creation, null for if domain data (including
 	 *            properties) already exist
+	 * @throws JAXBException
+	 * 			Invalid configuration
+	 * @throws IOException 
+	 * 			Problem finding configuration file
 	 */
-	public SecurityDomain(@NotNull File domainDir, @NotNull JAXBContext jaxbCtx, @NotNull Schema authzApiSchema,
-			@NotNull PdpModelHandler pdpModelHandler, Properties props)
+	public SecurityDomain(@NotNull File domainDir, @NotNull JAXBContext jaxbCtx, @NotNull Schema authzApiSchema, @NotNull PdpModelHandler pdpModelHandler, Properties props) throws IOException, JAXBException
 	{
 		this.jaxbCtx = jaxbCtx;
 		this.authzApiSchema = authzApiSchema;
@@ -211,18 +214,19 @@ public class SecurityDomain
 		// Initialize PDP
 		final String pdpConfLocation = pdpConfFile.getAbsolutePath();
 		
-//		BaseStaticPolicyFinder jaxbRootPolicyFinder = new BaseStaticPolicyFinder();
-//		jaxbRootPolicyFinder.setPolicyLocation(this.policySetFile.getPath());
-//		
-//		final Pdp jaxbPDP = new Pdp();
-//		jaxbPDP.setRootPolicyFinder(jaxbRootPolicyFinder);
-		try {
-			this.pdp = PdpConfigurationParser.getPDP(pdpConfLocation);
-		} catch (IOException | JAXBException e) {
-			e.printStackTrace();
-		}
+		BaseStaticPolicyFinder jaxbRootPolicyFinder = new BaseStaticPolicyFinder();
+		jaxbRootPolicyFinder.setPolicyLocation(this.policySetFile.getPath());
+		
+		final Pdp jaxbPDP = new Pdp();
+		jaxbPDP.setRootPolicyFinder(jaxbRootPolicyFinder);
+		this.pdp = PdpConfigurationParser.getPDP(pdpConfLocation);
 	}
 
+	private void updatePDP() throws IOException, JAXBException
+	{
+		Utils.checkFile("Domain PDP configuration file", pdpConfFile, false, true);
+		this.pdp = PdpConfigurationParser.getPDP(pdpConfFile.getAbsolutePath());
+	}
 	/**
 	 * Update PDP
 	 * 
@@ -235,60 +239,71 @@ public class SecurityDomain
 	 * @param attrfinders
 	 *            Extra attribute finders added to {@link #defaultAttributeFinderModules} if not
 	 *            null
+	 * @throws JAXBException
+	 * 			Invalid configuration
+	 * @throws IOException 
+	 * 			Problem finding configuration file
+	 * @deprecated 
+	 * 			Use updatePDP() instead
 	 */
-	private void updatePDP(boolean reloadPolicyFinderModules, AttributeFinders attrfinders)
+	private void updatePDP(boolean reloadPolicyFinderModules, AttributeFinders attrfinders) throws IOException, JAXBException
 	{
-		if (reloadPolicyFinderModules)
-		{
-			final List<AbstractPolicyFinder> policyFinderModules = new ArrayList<>(this.defaultPolicyFinderModules);
-
-			// StaticDomRefPolicyFinderModule
-			final AbstractPolicyFinder refPolicyFinderMod;
-			final PolicySets policySets = this.getRefPolicySets();
-			final List<PolicySet> policySetList = policySets.getPolicySets();
-			refPolicyFinderMod = new StaticRefPolicyFinderModule(policySetList.toArray(new String[policySetList.size()]));
-			policyFinderModules.add(refPolicyFinderMod);
-
-			// StaticPolicyFinderModule
-			final AbstractPolicyFinder rootPolicyFinderMod = new StaticPolicyFinderModule( new String[] {this.policySetFile
-					.getAbsolutePath()});
-			policyFinderModules.add(rootPolicyFinderMod);
-
-			final AbstractPolicyFinder policyFinder = this.pdp.getPolicyFinder();
-			policyFinder.setModules(policyFinderModules);
-			/**
-			 * Finder Modules' init methods must be called after PolicyFinder#setModules() and in
-			 * order of dependency (e.g. StaticPolicyFinderModule depends on
-			 * StaticDomRefPolicyFinderModule to resolve policy reference, therefore initialized
-			 * after the latter); so that a finder module can find/check policies resolved by other
-			 * modules on which it depends, or already resolved by itself during initialization,
-			 * using the policyFinder.
-			 * 
-			 */
-			refPolicyFinderMod.init(policyFinder);
-			rootPolicyFinderMod.init(policyFinder);
-		}
-
-		if (attrfinders != null)
-		{
-			final List<AbstractPolicyFinder> attrFinderModules = new ArrayList<>(this.defaultAttributeFinderModules);
-			for (AbstractAttributeFinder attrFinderConf : attrfinders.getAttributeFinders())
-			{
-				final AbstractPolicyFinder newAttrFinderModule = PdpExtensionFactory.getInstance(attrFinderConf);
-				attrFinderModules.add(newAttrFinderModule);
-			}
-
-			final AttributeFinder attrFinder = this.pdp.getAttributeFinder();
-			attrFinder.setModules(attrFinderModules);
-		}
+		updatePDP();
+		
+//		if (reloadPolicyFinderModules)
+//		{
+//			final List<AbstractPolicyFinder> policyFinderModules = new ArrayList<>(this.defaultPolicyFinderModules);
+//
+//			// StaticDomRefPolicyFinderModule
+//			final AbstractPolicyFinder refPolicyFinderMod;
+//			final PolicySets policySets = this.getRefPolicySets();
+//			final List<PolicySet> policySetList = policySets.getPolicySets();
+//			refPolicyFinderMod = new StaticRefPolicyFinderModule(policySetList.toArray(new String[policySetList.size()]));
+//			policyFinderModules.add(refPolicyFinderMod);
+//
+//			// StaticPolicyFinderModule
+//			final AbstractPolicyFinder rootPolicyFinderMod = new StaticPolicyFinderModule( new String[] {this.policySetFile
+//					.getAbsolutePath()});
+//			policyFinderModules.add(rootPolicyFinderMod);
+//
+//			final AbstractPolicyFinder policyFinder = this.pdp.getPolicyFinder();
+//			policyFinder.setModules(policyFinderModules);
+//			/**
+//			 * Finder Modules' init methods must be called after PolicyFinder#setModules() and in
+//			 * order of dependency (e.g. StaticPolicyFinderModule depends on
+//			 * StaticDomRefPolicyFinderModule to resolve policy reference, therefore initialized
+//			 * after the latter); so that a finder module can find/check policies resolved by other
+//			 * modules on which it depends, or already resolved by itself during initialization,
+//			 * using the policyFinder.
+//			 * 
+//			 */
+//			refPolicyFinderMod.init(policyFinder);
+//			rootPolicyFinderMod.init(policyFinder);
+//		}
+//
+//		if (attrfinders != null)
+//		{
+//			final List<AbstractPolicyFinder> attrFinderModules = new ArrayList<>(this.defaultAttributeFinderModules);
+//			for (AbstractAttributeFinder attrFinderConf : attrfinders.getAttributeFinders())
+//			{
+//				final AbstractPolicyFinder newAttrFinderModule = PdpExtensionFactory.getInstance(attrFinderConf);
+//				attrFinderModules.add(newAttrFinderModule);
+//			}
+//
+//			final AttributeFinder attrFinder = this.pdp.getAttributeFinder();
+//			attrFinder.setModules(attrFinderModules);
+//		}
 	}
 	
 	/**
 	 * Reload PDP from file (policy repository)
+	 * @throws JAXBException
+	 * 			Invalid configuration
+	 * @throws IOException 
+	 * 			Problem finding configuration file 
 	 */
-	public void reloadPDP() {
-		final AttributeFinders newAttrFinders = this.getAttributeFinders();
-		updatePDP(true, newAttrFinders);
+	public void reloadPDP() throws IOException, JAXBException {
+		updatePDP();
 	}
 
 	/**
