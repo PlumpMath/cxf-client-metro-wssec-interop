@@ -23,11 +23,7 @@ package com.thalesgroup.authzforce.rest;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.InternalServerErrorException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -38,24 +34,16 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 
 import org.apache.commons.io.FileUtils;
+import org.ow2.authzforce.core.PdpConfigurationParser;
+import org.ow2.authzforce.core.PdpModelHandler;
+import org.ow2.authzforce.core.XACMLBindingUtils;
+import org.ow2.authzforce.core.xmlns.pdp.Pdp;
+import org.ow2.authzforce.xmlns.rest.api.AttributeProviders;
+import org.ow2.authzforce.xmlns.rest.api.Properties;
 
+import com.sun.istack.internal.NotNull;
 import com.sun.xacml.PDP;
-import com.sun.xacml.finder.AttributeFinder;
-import com.sun.xacml.finder.AttributeFinderModule;
-import com.thalesgroup.appsec.util.Utils;
-import com.thalesgroup.authz.model._3.AttributeFinders;
 import com.thalesgroup.authz.model._3.PolicySets;
-import com.thalesgroup.authz.model._3_0.resource.Properties;
-import com.thalesgroup.authz.model.ext._3.AbstractAttributeFinder;
-import com.thalesgroup.authz.model.ext._3.AbstractPolicyFinder;
-import com.thalesgroup.authzforce.core.PdpConfigurationParser;
-import com.thalesgroup.authzforce.core.PdpModelHandler;
-import com.thalesgroup.authzforce.core.XACMLBindingUtils;
-import com.thalesgroup.authzforce.pdp.model._2015._06.BaseStaticPolicyFinder;
-import com.thalesgroup.authzforce.pdp.model._2015._06.Pdp;
-
-import net.sf.saxon.lib.Logger;
-import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySet;
 
 public class SecurityDomain
 {
@@ -104,12 +92,12 @@ public class SecurityDomain
 	/**
 	 * Name of domain PDP attribute finders file
 	 */
-	public static final String DOMAIN_ATTRIBUTE_FINDERS_FILENAME = "attributeFinders.xml";
+	public static final String DOMAIN_ATTRIBUTE_PROVIDERS_FILENAME = "attributeProviders.xml";
 
 	/**
 	 * Name of domain PDP attribute finders backup file
 	 */
-	public static final String DOMAIN_ATTRIBUTE_FINDERS_BACKUP_FILENAME = "attributeFinders.xml.old";
+	public static final String DOMAIN_ATTRIBUTE_PROVIDERS_BACKUP_FILENAME = "attributeProviders.xml.old";
 
 	/**
 	 * Name of PDP configuration file
@@ -202,10 +190,10 @@ public class SecurityDomain
 		this.refPolicySetBackupFile = new File(domainDir, DOMAIN_REF_POLICYSET_BACKUP_FILENAME);
 
 		// Check attributeFinders configuration file
-		this.attrFindersFile = new File(domainDir, DOMAIN_ATTRIBUTE_FINDERS_FILENAME);
+		this.attrFindersFile = new File(domainDir, DOMAIN_ATTRIBUTE_PROVIDERS_FILENAME);
 		Utils.checkFile("Domain PDP Attribute Finders file", policySetFile, false, true);
 
-		this.attrFindersBackupFile = new File(domainDir, DOMAIN_ATTRIBUTE_FINDERS_BACKUP_FILENAME);
+		this.attrFindersBackupFile = new File(domainDir, DOMAIN_ATTRIBUTE_PROVIDERS_BACKUP_FILENAME);
 
 		// Check PDP config file
 		this.pdpConfFile = new File(domainDir, DOMAIN_PDP_CONFIG_FILENAME);
@@ -246,7 +234,7 @@ public class SecurityDomain
 	 * @deprecated 
 	 * 			Use updatePDP() instead
 	 */
-	private void updatePDP(boolean reloadPolicyFinderModules, AttributeFinders attrfinders) throws IOException, JAXBException
+	private void updatePDP(boolean reloadPolicyFinderModules, AttributeProviders attrfinders) throws IOException, JAXBException
 	{
 		updatePDP();
 		
@@ -354,14 +342,14 @@ public class SecurityDomain
 	 * 
 	 * @return domain policy
 	 */
-	public PolicySet getPolicySet()
+	public PolicySets getPolicySet()
 	{
 		final Unmarshaller unmarshaller;
 		try
 		{
 			unmarshaller = XACMLBindingUtils.createXacml3Unmarshaller();
 			unmarshaller.setSchema(this.authzApiSchema);
-			final JAXBElement<PolicySet> jaxbElt = unmarshaller.unmarshal(new StreamSource(policySetFile), PolicySet.class);
+			final JAXBElement<PolicySets> jaxbElt = unmarshaller.unmarshal(new StreamSource(policySetFile), PolicySets.class);
 			return jaxbElt.getValue();
 		} catch (JAXBException e)
 		{
@@ -380,7 +368,7 @@ public class SecurityDomain
 	 * @throws JAXBException
 	 *             error marshalling new policySet to file for persistence
 	 */
-	public void setPolicySet(PolicySet policySet) throws IOException, JAXBException
+	public void setPolicySet(PolicySets policySet) throws IOException, JAXBException
 	{
 		// before changing policy, backup current policy
 		FileUtils.copyFile(this.policySetFile, this.policySetBackupFile);
@@ -433,14 +421,14 @@ public class SecurityDomain
 	 * 
 	 * @return attribute finders
 	 */
-	public AttributeFinders getAttributeFinders()
+	public AttributeProviders getAttributeProviders()
 	{
 		final Unmarshaller unmarshaller;
 		try
 		{
 			unmarshaller = jaxbCtx.createUnmarshaller();
 			unmarshaller.setSchema(authzApiSchema);
-			final JAXBElement<AttributeFinders> jaxbElt = unmarshaller.unmarshal(new StreamSource(attrFindersFile), AttributeFinders.class);
+			final JAXBElement<AttributeProviders> jaxbElt = unmarshaller.unmarshal(new StreamSource(attrFindersFile), AttributeProviders.class);
 			return jaxbElt.getValue();
 		} catch (JAXBException e)
 		{
@@ -452,14 +440,14 @@ public class SecurityDomain
 	/**
 	 * Set domain PDP attribute finders
 	 * 
-	 * @param attributefinders
+	 * @param attributeproviders
 	 *            attribute finders
 	 * @throws IOException
 	 *             error deleting previous domain policy backup file if any
 	 * @throws JAXBException
 	 *             error marshalling new policySet to file for persistence
 	 */
-	public void setAttributeFinders(AttributeFinders attributefinders) throws IOException, JAXBException
+	public void setAttributeProviders(AttributeProviders attributeproviders) throws IOException, JAXBException
 	{
 		// before changing attribute finders, backup current ones
 		FileUtils.copyFile(this.attrFindersFile, this.attrFindersBackupFile);
@@ -469,7 +457,7 @@ public class SecurityDomain
 			marshaller = jaxbCtx.createMarshaller();
 			marshaller.setSchema(authzApiSchema);
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, UTF8_JAXB_ENCODING);
-			marshaller.marshal(attributefinders, attrFindersFile);
+			marshaller.marshal(attributeproviders, attrFindersFile);
 		} catch (JAXBException e)
 		{
 			// Replace back with backup in case the file is corrupted due to this exception
@@ -482,7 +470,7 @@ public class SecurityDomain
 		 */
 		try
 		{
-			updatePDP(false, attributefinders);
+			updatePDP(false, attributeproviders);
 		} catch (Throwable e)
 		{
 			FileUtils.copyFile(this.attrFindersBackupFile, this.attrFindersFile);
