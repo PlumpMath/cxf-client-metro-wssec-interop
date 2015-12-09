@@ -28,7 +28,8 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.xml.bind.JAXBException;
 
-import com.thalesgroup.authzforce.api.jaxrs.PolicySetResource;
+import org.ow2.authzforce.jaxrs.api.PolicySetResource;
+
 import com.thalesgroup.authzforce.rest.SecurityDomain;
 
 import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySet;
@@ -75,6 +76,12 @@ public class PolicySetResourceImpl implements PolicySetResource
 			throw new BadRequestException(e);
 		}
 		return policyset;
+	}
+
+	@Override
+	public PolicySet deletePolicySet() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

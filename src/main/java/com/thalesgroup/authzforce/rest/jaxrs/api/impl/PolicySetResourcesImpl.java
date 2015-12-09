@@ -16,35 +16,37 @@
  * You should have received a copy of the GNU General Public License
  * along with AuthZForce.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.thalesgroup.authzforce.rest.jaxrs.api.impl;
-
-import javax.validation.constraints.NotNull;
-
-import org.ow2.authzforce.jaxrs.api.Pdp;
-
-import com.sun.xacml.PDP;
-
-import oasis.names.tc.xacml._3_0.core.schema.wd_17.Request;
-import oasis.names.tc.xacml._3_0.core.schema.wd_17.Response;
-
 /**
- * EndUserDomainPDP implementation
  * 
  */
-public class PdpImpl implements Pdp
-{	
-	private final PDP pdp;
+package com.thalesgroup.authzforce.rest.jaxrs.api.impl;
 
-	/**
-	 * @param pdp domain PDP
-	 */
-	public PdpImpl(@NotNull PDP pdp)
-	{
-		this.pdp = pdp;
+import org.ow2.authzforce.jaxrs.api.PolicySetResource;
+import org.ow2.authzforce.jaxrs.api.PolicySetResources;
+import org.ow2.authzforce.xmlns.rest.api.Resources;
+import org.w3._2005.atom.Link;
+
+import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySet;
+
+public class PolicySetResourcesImpl implements PolicySetResources
+{
+
+	@Override
+	public Link addPolicySet(PolicySet policyset) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public Response requestPolicyDecision(Request request) {
-		return  pdp.evaluate(request);
+	public Resources getPolicySets(String policySetId, String version) {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
+	@Override
+	public PolicySetResource getPolicySetResource(String policyUID) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

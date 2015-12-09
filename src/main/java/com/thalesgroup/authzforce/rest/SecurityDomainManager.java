@@ -61,21 +61,22 @@ import javax.xml.bind.JAXBException;
 import javax.xml.validation.Schema;
 
 import org.apache.commons.io.FileUtils;
+import org.ow2.authzforce.core.PdpExtensionLoader;
+import org.ow2.authzforce.core.PdpModelHandler;
+import org.ow2.authzforce.xmlns.rest.api.AttributeProviders;
+import org.ow2.authzforce.xmlns.rest.api.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import com.thalesgroup.appsec.util.Utils;
-import com.thalesgroup.authz.model._3.AttributeFinders;
-import com.thalesgroup.authz.model._3.PolicySets;
-import com.thalesgroup.authz.model._3_0.resource.Properties;
-import com.thalesgroup.authzforce.core.PdpExtensionLoader;
-import com.thalesgroup.authzforce.core.PdpModelHandler;
+
+import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySet;
 
 public class SecurityDomainManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SecurityDomainManager.class);
 
-	private static final Class<?>[] DEFAULT_JAXB_CTX_BOUND_CLASSES = { PolicySets.class, AttributeFinders.class,
+	private static final Class<?>[] DEFAULT_JAXB_CTX_BOUND_CLASSES = { PolicySet.class, AttributeProviders.class,
 			Properties.class };
 
 	private final Path domainsRootDir;

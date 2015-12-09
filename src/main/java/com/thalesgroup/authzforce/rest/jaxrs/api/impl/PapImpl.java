@@ -26,14 +26,14 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.Path;
 
+import org.ow2.authzforce.jaxrs.api.AttributeProviderList;
+import org.ow2.authzforce.jaxrs.api.Pap;
+import org.ow2.authzforce.jaxrs.api.PolicySetResources;
+import org.ow2.authzforce.xmlns.rest.api.PdpProperties;
+import org.ow2.authzforce.xmlns.rest.api.Resources;
 import org.w3._2005.atom.Link;
 import org.w3._2005.atom.Relation;
 
-import com.thalesgroup.authz.model._3_0.resource.Resources;
-import com.thalesgroup.authzforce.api.jaxrs.AttributeFinderList;
-import com.thalesgroup.authzforce.api.jaxrs.Pap;
-import com.thalesgroup.authzforce.api.jaxrs.PolicySetResource;
-import com.thalesgroup.authzforce.api.jaxrs.RefPolicySetList;
 import com.thalesgroup.authzforce.rest.SecurityDomain;
 
 
@@ -62,15 +62,16 @@ public class PapImpl implements Pap
 	 * @see com.thalesgroup.authzforce.api.jaxrs.EndUserDomain#getPolicySetResource()
 	 */
 	@Override
-	public PolicySetResource getPolicySetResource()
+	public PolicySetResources getPolicySetResources()
 	{
-		return new PolicySetResourceImpl(policyDomain);
+//		return new PolicySetResourcesImpl(policyDomain);
+		return new PolicySetResourcesImpl();
 	}
 
 	@Override
-	public AttributeFinderList getAttributeFinderList()
+	public AttributeProviderList getAttributeProviderList()
 	{
-		return new AttributeFinderListImpl(policyDomain);
+		return new AttributeProviderListImpl(policyDomain);
 	}
 
 	@Override
@@ -139,9 +140,8 @@ public class PapImpl implements Pap
 	}
 
 	@Override
-	public RefPolicySetList getRefPolicySetList()
-	{
-		return new RefPolicySetListImpl(policyDomain);
+	public PdpProperties updatePdpProperties(PdpProperties pdpproperties) {
+		// TODO Auto-generated method stub
+		return null;
 	}
-
 }

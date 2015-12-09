@@ -24,6 +24,7 @@ package com.thalesgroup.authzforce.rest;
 import java.io.File;
 import java.io.IOException;
 
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.InternalServerErrorException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -37,13 +38,15 @@ import org.apache.commons.io.FileUtils;
 import org.ow2.authzforce.core.PdpConfigurationParser;
 import org.ow2.authzforce.core.PdpModelHandler;
 import org.ow2.authzforce.core.XACMLBindingUtils;
+import org.ow2.authzforce.core.xmlns.pdp.BaseStaticPolicyProvider;
 import org.ow2.authzforce.core.xmlns.pdp.Pdp;
 import org.ow2.authzforce.xmlns.rest.api.AttributeProviders;
 import org.ow2.authzforce.xmlns.rest.api.Properties;
 
-import com.sun.istack.internal.NotNull;
 import com.sun.xacml.PDP;
-import com.thalesgroup.authz.model._3.PolicySets;
+import com.thalesgroup.appsec.util.Utils;
+
+import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicySet;
 
 public class SecurityDomain
 {
@@ -201,12 +204,12 @@ public class SecurityDomain
 
 		// Initialize PDP
 		final String pdpConfLocation = pdpConfFile.getAbsolutePath();
-		
-		BaseStaticPolicyFinder jaxbRootPolicyFinder = new BaseStaticPolicyFinder();
-		jaxbRootPolicyFinder.setPolicyLocation(this.policySetFile.getPath());
+				
+		BaseStaticPolicyProvider jaxbRootPolicyProvider = new BaseStaticPolicyProvider();
+		jaxbRootPolicyProvider.setPolicyLocation(this.policySetFile.getPath());
 		
 		final Pdp jaxbPDP = new Pdp();
-		jaxbPDP.setRootPolicyFinder(jaxbRootPolicyFinder);
+		jaxbPDP.setRootPolicyProvider(jaxbRootPolicyProvider);
 		this.pdp = PdpConfigurationParser.getPDP(pdpConfLocation);
 	}
 
@@ -237,50 +240,6 @@ public class SecurityDomain
 	private void updatePDP(boolean reloadPolicyFinderModules, AttributeProviders attrfinders) throws IOException, JAXBException
 	{
 		updatePDP();
-		
-//		if (reloadPolicyFinderModules)
-//		{
-//			final List<AbstractPolicyFinder> policyFinderModules = new ArrayList<>(this.defaultPolicyFinderModules);
-//
-//			// StaticDomRefPolicyFinderModule
-//			final AbstractPolicyFinder refPolicyFinderMod;
-//			final PolicySets policySets = this.getRefPolicySets();
-//			final List<PolicySet> policySetList = policySets.getPolicySets();
-//			refPolicyFinderMod = new StaticRefPolicyFinderModule(policySetList.toArray(new String[policySetList.size()]));
-//			policyFinderModules.add(refPolicyFinderMod);
-//
-//			// StaticPolicyFinderModule
-//			final AbstractPolicyFinder rootPolicyFinderMod = new StaticPolicyFinderModule( new String[] {this.policySetFile
-//					.getAbsolutePath()});
-//			policyFinderModules.add(rootPolicyFinderMod);
-//
-//			final AbstractPolicyFinder policyFinder = this.pdp.getPolicyFinder();
-//			policyFinder.setModules(policyFinderModules);
-//			/**
-//			 * Finder Modules' init methods must be called after PolicyFinder#setModules() and in
-//			 * order of dependency (e.g. StaticPolicyFinderModule depends on
-//			 * StaticDomRefPolicyFinderModule to resolve policy reference, therefore initialized
-//			 * after the latter); so that a finder module can find/check policies resolved by other
-//			 * modules on which it depends, or already resolved by itself during initialization,
-//			 * using the policyFinder.
-//			 * 
-//			 */
-//			refPolicyFinderMod.init(policyFinder);
-//			rootPolicyFinderMod.init(policyFinder);
-//		}
-//
-//		if (attrfinders != null)
-//		{
-//			final List<AbstractPolicyFinder> attrFinderModules = new ArrayList<>(this.defaultAttributeFinderModules);
-//			for (AbstractAttributeFinder attrFinderConf : attrfinders.getAttributeFinders())
-//			{
-//				final AbstractPolicyFinder newAttrFinderModule = PdpExtensionFactory.getInstance(attrFinderConf);
-//				attrFinderModules.add(newAttrFinderModule);
-//			}
-//
-//			final AttributeFinder attrFinder = this.pdp.getAttributeFinder();
-//			attrFinder.setModules(attrFinderModules);
-//		}
 	}
 	
 	/**
@@ -342,14 +301,14 @@ public class SecurityDomain
 	 * 
 	 * @return domain policy
 	 */
-	public PolicySets getPolicySet()
+	public PolicySet getPolicySet()
 	{
 		final Unmarshaller unmarshaller;
 		try
 		{
 			unmarshaller = XACMLBindingUtils.createXacml3Unmarshaller();
 			unmarshaller.setSchema(this.authzApiSchema);
-			final JAXBElement<PolicySets> jaxbElt = unmarshaller.unmarshal(new StreamSource(policySetFile), PolicySets.class);
+			final JAXBElement<PolicySet> jaxbElt = unmarshaller.unmarshal(new StreamSource(policySetFile), PolicySet.class);
 			return jaxbElt.getValue();
 		} catch (JAXBException e)
 		{
@@ -368,7 +327,7 @@ public class SecurityDomain
 	 * @throws JAXBException
 	 *             error marshalling new policySet to file for persistence
 	 */
-	public void setPolicySet(PolicySets policySet) throws IOException, JAXBException
+	public void setPolicySet(PolicySet policySet) throws IOException, JAXBException
 	{
 		// before changing policy, backup current policy
 		FileUtils.copyFile(this.policySetFile, this.policySetBackupFile);
@@ -484,14 +443,14 @@ public class SecurityDomain
 	 * 
 	 * @return candidate PolicySets
 	 */
-	public PolicySets getRefPolicySets()
+	public PolicySet getRefPolicySets()
 	{
 		final Unmarshaller unmarshaller;
 		try
 		{
 			unmarshaller = XACMLBindingUtils.createXacml3Unmarshaller();
 			unmarshaller.setSchema(authzApiSchema);
-			final JAXBElement<PolicySets> jaxbElt = unmarshaller.unmarshal(new StreamSource(this.refPolicySetFile), PolicySets.class);
+			final JAXBElement<PolicySet> jaxbElt = unmarshaller.unmarshal(new StreamSource(this.refPolicySetFile), PolicySet.class);
 			return jaxbElt.getValue();
 		} catch (JAXBException e)
 		{
@@ -510,7 +469,7 @@ public class SecurityDomain
 	 * @throws JAXBException
 	 *             if marshalling of the <PolicySet>s to XML file for persistence failed
 	 */
-	public void setRefPolicySets(PolicySets policysets) throws IOException, JAXBException
+	public void setRefPolicySets(PolicySet policysets) throws IOException, JAXBException
 	{
 		// before changing ref-PolicySets, backup current ones
 		FileUtils.copyFile(this.refPolicySetFile, this.refPolicySetBackupFile);

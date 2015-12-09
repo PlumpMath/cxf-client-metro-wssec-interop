@@ -34,13 +34,13 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Context;
 
 import org.apache.cxf.jaxrs.ext.MessageContext;
+import org.ow2.authzforce.jaxrs.api.EndUserDomain;
+import org.ow2.authzforce.jaxrs.api.EndUserDomainSet;
+import org.ow2.authzforce.xmlns.rest.api.Properties;
+import org.ow2.authzforce.xmlns.rest.api.Resources;
 import org.w3._2005.atom.Link;
 import org.w3._2005.atom.Relation;
 
-import com.thalesgroup.authz.model._3_0.resource.Properties;
-import com.thalesgroup.authz.model._3_0.resource.Resources;
-import com.thalesgroup.authzforce.api.jaxrs.EndUserDomain;
-import com.thalesgroup.authzforce.api.jaxrs.EndUserDomainSet;
 import com.thalesgroup.authzforce.rest.SecurityDomain;
 import com.thalesgroup.authzforce.rest.SecurityDomainManager;
 
@@ -115,7 +115,7 @@ public class EndUserDomainSetImpl implements EndUserDomainSet
 	 * @see com.thalesgroup.authzforce.api.jaxrs.EndUserDomainSet#getDomains()
 	 */
 	@Override
-	public Resources getDomains()
+	public Resources getDomains(String externalId)
 	{
 		// each sub-directory inside domainRootDir is a policy domain directory
 		// add domain on the fly

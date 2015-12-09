@@ -26,6 +26,7 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import org.ow2.authzforce.xmlns.rest.api.Error;
 
 /**
  * @see org.apache.cxf.jaxrs.impl.WebApplicationExceptionMapper WebApplicationExceptionMapper
@@ -39,7 +40,7 @@ public class NotFoundExceptionMapper implements ExceptionMapper<NotFoundExceptio
 	{
 		// if NotFoundException has root cause, we expect the root cause message to be more specific on what resource could not be found, so return this message to the client
 		if (exception.getCause() != null) {
-			final com.thalesgroup.authz.model._3.Error errorEntity = new com.thalesgroup.authz.model._3.Error();
+			final Error errorEntity = new Error();
 			errorEntity.setMessage(exception.getCause().getMessage());
 			return Response.status(Response.Status.NOT_FOUND).entity(errorEntity).build();
 		}
