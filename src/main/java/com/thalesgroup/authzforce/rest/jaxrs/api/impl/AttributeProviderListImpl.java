@@ -28,12 +28,13 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.xml.bind.JAXBException;
 
-import com.thalesgroup.authz.model._3.AttributeFinders;
-import com.thalesgroup.authzforce.api.jaxrs.AttributeFinderList;
+import org.ow2.authzforce.jaxrs.api.AttributeProviderList;
+import org.ow2.authzforce.xmlns.rest.api.AttributeProviders;
+
 import com.thalesgroup.authzforce.rest.SecurityDomain;
 
 
-public class AttributeFinderListImpl implements AttributeFinderList
+public class AttributeProviderListImpl implements AttributeProviderList
 {
 	private final SecurityDomain policyDomain;
 	
@@ -42,7 +43,7 @@ public class AttributeFinderListImpl implements AttributeFinderList
 	 * 
 	 * @param policyDomain domain to which the policySet applies
 	 */
-	public AttributeFinderListImpl(@NotNull SecurityDomain policyDomain)
+	public AttributeProviderListImpl(@NotNull SecurityDomain policyDomain)
 	{
 		this.policyDomain = policyDomain;
 	}
@@ -51,20 +52,20 @@ public class AttributeFinderListImpl implements AttributeFinderList
 	 * @see com.thalesgroup.authzforce.api.jaxrs.AttributeFinderList#getAttributeFinders()
 	 */
 	@Override
-	public AttributeFinders getAttributeFinders()
+	public AttributeProviders getAttributeProviders()
 	{
-		return this.policyDomain.getAttributeFinders();
+		return this.policyDomain.getAttributeProviders();
 	}
 
 	/* (non-Javadoc)
 	 * @see com.thalesgroup.authzforce.api.jaxrs.AttributeFinderList#updateAttributeFinders(com.thalesgroup.authz.model.AttributeFinders)
 	 */
 	@Override
-	public AttributeFinders updateAttributeFinders(AttributeFinders attributefinders)
+	public AttributeProviders updateAttributeProviders(AttributeProviders attributeProviders)
 	{
 		try
 		{
-			this.policyDomain.setAttributeFinders(attributefinders);
+			this.policyDomain.setAttributeProviders(attributeProviders);
 		} catch (IOException e)
 		{
 			throw new InternalServerErrorException(e);
@@ -75,7 +76,7 @@ public class AttributeFinderListImpl implements AttributeFinderList
 			throw new BadRequestException(e);
 		}
 		
-		return attributefinders;
+		return attributeProviders;
 	}
 
 }

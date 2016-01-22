@@ -29,6 +29,8 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBException;
 
+import org.ow2.authzforce.xmlns.rest.api.Error;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -90,7 +92,7 @@ public class BadRequestExceptionMapper implements ExceptionMapper<BadRequestExce
 
 		if (errMsg != null)
 		{
-			final com.thalesgroup.authz.model._3.Error errorEntity = new com.thalesgroup.authz.model._3.Error();
+			final Error errorEntity = new Error();
 			errorEntity.setMessage(errMsg);
 			return Response.status(Response.Status.BAD_REQUEST).entity(errorEntity).build();
 		}

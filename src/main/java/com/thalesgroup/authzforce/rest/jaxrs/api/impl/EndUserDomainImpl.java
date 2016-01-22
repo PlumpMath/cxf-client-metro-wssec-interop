@@ -26,16 +26,16 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 
+import org.ow2.authzforce.jaxrs.api.EndUserDomain;
+import org.ow2.authzforce.jaxrs.api.Pap;
+import org.ow2.authzforce.jaxrs.api.Pdp;
+import org.ow2.authzforce.xmlns.rest.api.Domain;
+import org.ow2.authzforce.xmlns.rest.api.Properties;
+import org.ow2.authzforce.xmlns.rest.api.Resources;
 import org.w3._2005.atom.Link;
 import org.w3._2005.atom.Relation;
 
 import com.sun.xacml.PDP;
-import com.thalesgroup.authz.model._3_0.resource.Domain;
-import com.thalesgroup.authz.model._3_0.resource.Properties;
-import com.thalesgroup.authz.model._3_0.resource.Resources;
-import com.thalesgroup.authzforce.api.jaxrs.EndUserDomain;
-import com.thalesgroup.authzforce.api.jaxrs.Pap;
-import com.thalesgroup.authzforce.api.jaxrs.Pdp;
 import com.thalesgroup.authzforce.rest.SecurityDomain;
 import com.thalesgroup.authzforce.rest.jaxrs.api.impl.EndUserDomainSetImpl.DomainEntry;
 

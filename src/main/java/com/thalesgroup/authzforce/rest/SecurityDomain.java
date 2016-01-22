@@ -258,7 +258,7 @@ public class SecurityDomain
 			final PolicyFinderModule<?> refPolicyFinderMod;
 			final PolicySets policySets = this.getRefPolicySets();
 			final List<PolicySet> policySetList = policySets.getPolicySets();
-			refPolicyFinderMod = new StaticRefPolicyFinderModule(policySetList.toArray(new PolicySet[policySetList.size()]));
+			refPolicyFinderMod = new StaticRefPolicyFinderModule(policySetList.toArray(new String[policySetList.size()]));
 			policyFinderModules.add(refPolicyFinderMod);
 
 			// StaticPolicyFinderModule

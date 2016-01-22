@@ -24,6 +24,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.ow2.authzforce.xmlns.rest.api.Error;
+
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
@@ -47,7 +49,7 @@ public class ErrorHandlerInterceptor extends AbstractPhaseInterceptor<Message>
 	{
 		try
 		{
-			AUTHZ_API_JAXB_CONTEXT = JAXBContext.newInstance(com.thalesgroup.authz.model._3.Error.class);
+			AUTHZ_API_JAXB_CONTEXT = JAXBContext.newInstance(Error.class);
 		} catch (JAXBException e)
 		{
 			throw new RuntimeException(
@@ -88,7 +90,7 @@ public class ErrorHandlerInterceptor extends AbstractPhaseInterceptor<Message>
 				errMsg = INTERNAL_SERVER_ERROR_MSG;
 			}
 			
-			final com.thalesgroup.authz.model._3.Error errorEntity = new com.thalesgroup.authz.model._3.Error();
+			final Error errorEntity = new Error();
 			errorEntity.setMessage(errMsg);
 			response.setStatus(respStatus.getStatusCode());
 			try

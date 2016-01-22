@@ -27,6 +27,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.ow2.authzforce.xmlns.rest.api.Error;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class ServerErrorExceptionMapper implements ExceptionMapper<InternalServerErrorException>
 {
 	private final static Logger LOGGER = LoggerFactory.getLogger(ServerErrorExceptionMapper.class);
-	private final static com.thalesgroup.authz.model._3.Error ERROR = new com.thalesgroup.authz.model._3.Error();
+	private final static Error ERROR = new Error();
 	private final static String INTERNAL_ERR_MSG = "Internal server error";
 	
 	static
